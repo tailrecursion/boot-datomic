@@ -15,11 +15,10 @@ export DATOMIC_LICENSE_KEY=<license-key>
 
 add the task to your boot script
 ```clojure
-(require 
-  '[boot.core        :as core]
+(require
   '[tailrecursion.boot-datomic :refer [datomic]] )
 
-(core/deftask run
+(deftask run
   []
   (comp (wait) (speak) (datomic :license-key (System/getenv "DATOMIC_LICENSE_KEY")) ))
 ```
