@@ -6,7 +6,7 @@
                   [ch.qos.logback/logback-classic "1.1.2"     :scope "runtime"] ])
 
 (require 
-  '[boot.core        :as core]
+  '[boot.core                  :as core]
   '[tailrecursion.boot-datomic :refer [datomic]] )
 
 (core/deftask test
