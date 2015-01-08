@@ -3,7 +3,7 @@ run the datomic transactor embedded in a boot pod
 
 ## setup
 
-install the datomic pro jar into your local maven repository
+install the datomic transactor pro jar into your local maven repository
 ```bash
 mvn install:install-file -DgroupId=com.datomic -DartifactId=datomic-transactor-pro -Dfile=datomic-transactor-pro-0.9.5078.jar -DpomFile=pom.xml
 ```
