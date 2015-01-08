@@ -9,7 +9,7 @@
 (def ^:private default-opts
  {:protocol               "dev"
   :host                   "localhost"
-  :port                   "4334"
+  ;:port                   "4334"
   :memory-index-max       "256m"   
   :memory-index-threshold "32m"
   :object-cache-max       "128m" })
@@ -35,5 +35,5 @@
          props (merge default-opts *opts*) ]
       (core/with-pre-wrap fileset
         (pod/with-call-in @pod
-          (datomic.transactor/run ~props nil) )
+          (datomic.transactor/run ~props "datomic boot task options") )
         fileset )))
