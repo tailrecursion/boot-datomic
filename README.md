@@ -1,4 +1,4 @@
-# boot datomic
+# boot datomic (experimental)
 run the datomic transactor embedded in a boot pod
 
 ## setup
