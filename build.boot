@@ -1,6 +1,7 @@
 (set-env!
   :resource-paths #{"rsc"}
-  :target-path     "tgt"
+  :source-paths   #{"src"}
+  :target-path    "tgt"
   :dependencies   '[[org.clojure/clojure                "1.6.0"     :scope "provided"]
                     [boot/core                          "2.0.0-rc5" :scope "provided"]
                     [com.datomic/datomic-transactor-pro "0.9.5078"  :scope "provided" :exclusions [org.slf4j/slf4j-nop]]
