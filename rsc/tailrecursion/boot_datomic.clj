@@ -1,7 +1,11 @@
 (ns tailrecursion.boot-datomic
   (:require
-    [boot.core :as core]
-    [boot.pod  :as pod] ))
+    [boot.pod  :as pod] 
+    [boot.core :refer :all] ))
+
+(def ^:private deps
+  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [org.slf4j/slf4j-nop]]
+    [ch.qos.logback/logback-classic     "1.1.2"] ])
 
 (def ^:private default-opts
  {:protocol               "dev"
@@ -11,7 +15,7 @@
   :memory-index-threshold "32m"
   :object-cache-max       "128m" })
 
-(core/deftask datomic
+(deftask datomic
 
   "Start the transactor.
 
@@ -29,13 +33,9 @@
    m memory-index-max BYTES       str "Maximum size of the memory index (256m)."
    c object-cache-max BYTES       str "Size of the object cache (128m)." ]
 
-   (let [opts (merge default-opts *opts*)
-         jars '[com.datomic/datomic-transactor-pro ch.qos.logback/logback-classic]
-         pod  (-> (core/get-env) 
-                  (update-in [:dependencies] (partial filterv (fn [[a]] (some #{a} jars))))
-                  pod/make-pod 
-                  future ) ]
-      (core/with-pre-wrap fileset
+   (let [pod  (future (-> (get-env) (update-in [:dependencies] into deps) pod/make-pod))
+         opts (into default-opts *opts*) ]
+      (with-pre-wrap fileset
         (pod/with-call-in @pod
-          (datomic.transactor/run ~opts "datomic boot task options") )
+          (tailrecursion.boot-datomic.impl/datomic ~opts) )
         fileset )))
