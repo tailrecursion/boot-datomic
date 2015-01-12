@@ -4,10 +4,28 @@
     [boot.core :refer :all] ))
 
 (def ^:private deps
-  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]] )
+  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+    [org.clojure/data.json              "0.2.5"] ])
 
 (defn make-pod []
   (future (-> (get-env) (update-in [:dependencies] into deps) pod/make-pod)))
+
+(deftask create-dynamodb-table
+  "Create a new DynamoDB table for use by Datomic.
+
+  For more information reference http://docs.datomic.com/storage.html."
+
+  [n table-name NAME      str "Required name of the table"
+   g region REGION        kw  "Required AWS region"
+   r read-capacity WRITES int "Optional read capacity (100)"
+   w write-capacity READS int "Optional write capacity (50)"]
+
+   (let [pod  (make-pod)
+         opts (into {:read-capacity 100 :write-capacity 50} *opts*)]
+      (with-pre-wrap fileset
+        (pod/with-call-in @pod
+          (datomic.provisioning.aws/create-system-command ~opts) )
+        fileset )))
 
 (deftask backup
   "Backup the database.
@@ -79,7 +97,7 @@
           (datomic.backup-cli/restore ~opts) )
         fileset )))
 
-(def ^:private default-opts
+(def ^:private default-transactor-opts
  {:protocol               "dev"
   :host                   "localhost"
   :port                   "4334"
@@ -106,7 +124,7 @@
    c object-cache-max BYTES       str "Size of the object cache (128m)." ]
 
    (let [pod  (make-pod)
-         opts (into default-opts *opts*) ]
+         opts (into default-transactor-opts *opts*) ]
       (with-pre-wrap fileset
         (pod/with-call-in @pod
           (tailrecursion.boot-datomic.transactor/run ~opts) )
