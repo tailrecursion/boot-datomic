@@ -12,8 +12,8 @@
 (deftask backup
   "Backup the database.
 
-  The backup URI may refer to the local filesystem or an S3 bucket as specified 
-  below.
+  The destination URI may refer to the local filesystem or an S3 bucket as 
+  shown below.
 
       file:/full/path/to/backup-directory
       s3://bucket/prefix
@@ -23,15 +23,40 @@
 
   For more information reference http://docs.datomic.com/backup.html."
 
-  [f from-db-uri URI   str  "Required backup source"
-   t to-backup-uri URI str  "Required backup destination"
-   e encryption        bool "Use AWS SSE-S3 encryption (false)."]
-   
+  [s from-db-uri URI   str  "Required backup source"
+   t to-backup-uri URI str  "Required backup target"
+   e encryption        bool "Use AWS SSE-S3 encryption (false)"]
+
    (let [pod  (make-pod)
          opts (assoc *opts* :encryption (if encryption :sse))]
       (with-pre-wrap fileset
         (pod/with-call-in @pod
           (datomic.backup-cli/backup ~opts) )
+        fileset )))
+
+(deftask restore
+  "Restore the database.
+
+  The source URI may refer to the local filesystem or an S3 bucket as shown 
+  below.
+
+      file:/full/path/to/backup-directory
+      s3://bucket/prefix
+
+  This task restores the database to the most recent restoration point (t) by
+  default, but can optionally restore the database to another t value.
+
+  For more information reference http://docs.datomic.com/backup.html."
+
+  [s from-backup-uri URI str "Required restore source"
+   t to-db-uri URI       str "Required restore target"
+   m time T              int "Optional restoration point (most recent)"]
+
+   (let [pod  (make-pod)
+         opts (clojure.set/rename-keys *opts* {:time :t})]
+      (with-pre-wrap fileset
+        (pod/with-call-in @pod
+          (datomic.backup-cli/restore ~opts) )
         fileset )))
 
 (def ^:private default-opts
