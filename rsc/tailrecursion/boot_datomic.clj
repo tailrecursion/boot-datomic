@@ -1,11 +1,10 @@
 (ns tailrecursion.boot-datomic
   (:require
-    [boot.pod  :as pod] 
+    [boot.pod  :as    pod] 
     [boot.core :refer :all] ))
 
 (def ^:private deps
-  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [org.slf4j/slf4j-nop]]
-    [ch.qos.logback/logback-classic     "1.1.2"] ])
+  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]] )
 
 (def ^:private default-opts
  {:protocol               "dev"
