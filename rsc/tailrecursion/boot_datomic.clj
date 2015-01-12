@@ -34,6 +34,26 @@
           (datomic.backup-cli/backup ~opts) )
         fileset )))
 
+(deftask list-backups
+  "List the approximate points in time (t) of available backups made of the 
+  database.
+
+  The source URI may refer to the local filesystem or an S3 bucket as shown 
+  below.
+
+      file:/full/path/to/backup-directory
+      s3://bucket/prefix
+
+  For more information reference http://docs.datomic.com/backup.html."
+
+  [s backup-uri URI str "Required backup source"]
+
+   (let [pod  (make-pod)]
+      (with-pre-wrap fileset
+        (pod/with-call-in @pod
+          (tailrecursion.boot-datomic.backup/list-backups ~*opts*) )
+        fileset )))
+
 (deftask restore
   "Restore the database.
 
@@ -89,5 +109,5 @@
          opts (into default-opts *opts*) ]
       (with-pre-wrap fileset
         (pod/with-call-in @pod
-          (tailrecursion.boot-datomic.impl/datomic ~opts) )
+          (tailrecursion.boot-datomic.transactor/run ~opts) )
         fileset )))
