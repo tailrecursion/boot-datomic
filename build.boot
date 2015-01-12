@@ -10,7 +10,7 @@
                                           :password (System/getenv "DATOMIC_REPO_PASSWORD") }]]))
 
 (require
-  '[tailrecursion.boot-datomic :refer [datomic]] )
+  '[tailrecursion.boot-datomic :refer [backup datomic]] )
 
 (def +version+ "0.1.0-SNAPSHOT")
 
