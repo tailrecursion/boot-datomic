@@ -14,7 +14,8 @@ export BOOT_JVM_OPTIONS="-client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 
 export DATOMIC_LICENSE_KEY=<license-key>
 ```
 
-add the boot-datmoic jar and a logging framework to your boot environment dependencies.
+add boot-datomic and your preferred logging framework to the environment.
+
 ```clojure
 (set-env!
   :source-paths #{"src"}
