@@ -1,11 +1,11 @@
 (ns tailrecursion.boot-datomic
   (:require
-    [boot.pod  :as    pod] 
+    [boot.pod  :as    pod]
     [boot.core :refer :all] ))
 
 (def ^:private deps
-  '[[com.datomic/datomic-transactor-pro "0.9.5078" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
-    [org.clojure/data.json              "0.2.5"] ])
+  '[[com.datomic/datomic-transactor-pro "0.9.5173" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+    [org.clojure/data.json              "0.2.3"] ])
 
 (defn make-pod []
   (future (-> (get-env) (update-in [:dependencies] into deps) pod/make-pod)))
@@ -30,13 +30,13 @@
 (deftask backup
   "Backup the database.
 
-  The destination URI may refer to the local filesystem or an S3 bucket as 
+  The destination URI may refer to the local filesystem or an S3 bucket as
   shown below.
 
       file:/full/path/to/backup-directory
       s3://bucket/prefix
 
-  Encryption is only supported on S3 using AWS' managed server side encryption 
+  Encryption is only supported on S3 using AWS' managed server side encryption
   keys (SSE-S3).
 
   For more information reference http://docs.datomic.com/backup.html."
@@ -53,10 +53,10 @@
         fileset )))
 
 (deftask list-backups
-  "List the approximate points in time (t) of available backups made of the 
+  "List the approximate points in time (t) of available backups made of the
   database.
 
-  The source URI may refer to the local filesystem or an S3 bucket as shown 
+  The source URI may refer to the local filesystem or an S3 bucket as shown
   below.
 
       file:/full/path/to/backup-directory
@@ -75,7 +75,7 @@
 (deftask restore
   "Restore the database.
 
-  The source URI may refer to the local filesystem or an S3 bucket as shown 
+  The source URI may refer to the local filesystem or an S3 bucket as shown
   below.
 
       file:/full/path/to/backup-directory
@@ -101,7 +101,7 @@
  {:protocol               "dev"
   :host                   "localhost"
   :port                   "4334"
-  :memory-index-max       "256m"   
+  :memory-index-max       "256m"
   :memory-index-threshold "32m"
   :object-cache-max       "128m" })
 

@@ -2,9 +2,9 @@
   :resource-paths #{"rsc"}
   :source-paths   #{"src"}
   :target-path    "tgt"
-  :dependencies   '[[org.clojure/clojure            "1.6.0"     :scope "provided"]
-                    [boot/core                      "2.0.0-rc6" :scope "provided"]
-                    [ch.qos.logback/logback-classic "1.1.2"     :scope "provided"] ]
+  :dependencies   '[[org.clojure/clojure            "1.6.0"      :scope "provided"]
+                    [boot/core                      "2.0.0"      :scope "provided"]
+                    [ch.qos.logback/logback-classic "1.1.2"      :scope "provided"] ]
   :repositories   #(into % [["datomic"   {:url      "https://my.datomic.com/repo"
                                           :username (System/getenv "DATOMIC_REPO_USERNAME")
                                           :password (System/getenv "DATOMIC_REPO_PASSWORD") }]]))
