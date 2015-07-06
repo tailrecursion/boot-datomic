@@ -1,14 +1,20 @@
 (ns tailrecursion.boot-datomic
+  {:boot/export-tasks true}
   (:require
-    [boot.pod  :as    pod]
-    [boot.core :refer :all] ))
+    [boot.core :as core :refer [deftask]]
+    [boot.pod  :as pod] ))
 
 (def ^:private deps
-  '[[com.datomic/datomic-transactor-pro "0.9.5173" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
-    [org.clojure/data.json              "0.2.3"] ])
+  "Datomic transactor to load if none is provided via the project."
+  (delay (remove pod/dependency-loaded?
+   '[[com.datomic/datomic-transactor-pro "0.9.5186" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+     [org.clojure/data.json              "0.2.3"] ])))
 
 (defn make-pod []
-  (future (-> (get-env) (update-in [:dependencies] into deps) pod/make-pod)))
+  (-> (core/get-env)
+      (update-in [:dependencies] into (vec (seq @deps)))
+      (pod/make-pod)
+      (future) ))
 
 (deftask create-dynamodb-table
   "Create a new DynamoDB table for use by Datomic.
@@ -22,7 +28,7 @@
 
    (let [pod  (make-pod)
          opts (into {:read-capacity 100 :write-capacity 50} *opts*)]
-      (with-pre-wrap fileset
+      (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (datomic.provisioning.aws/create-system-command ~opts) )
         fileset )))
@@ -47,7 +53,7 @@
 
    (let [pod  (make-pod)
          opts (assoc *opts* :encryption (if encryption :sse))]
-      (with-pre-wrap fileset
+      (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (datomic.backup-cli/backup ~opts) )
         fileset )))
@@ -67,7 +73,7 @@
   [s backup-uri URI str "Required backup source"]
 
    (let [pod  (make-pod)]
-      (with-pre-wrap fileset
+      (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (tailrecursion.boot-datomic.backup/list-backups ~*opts*) )
         fileset )))
@@ -92,7 +98,7 @@
 
    (let [pod  (make-pod)
          opts (clojure.set/rename-keys *opts* {:time :t})]
-      (with-pre-wrap fileset
+      (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (datomic.backup-cli/restore ~opts) )
         fileset )))
@@ -123,9 +129,9 @@
    m memory-index-max BYTES       str "Maximum size of the memory index (256m)."
    c object-cache-max BYTES       str "Size of the object cache (128m)." ]
 
-   (let [pod  (make-pod)
+   (let [pod (make-pod)
          opts (into default-transactor-opts *opts*) ]
-      (with-pre-wrap fileset
+      (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (tailrecursion.boot-datomic.transactor/run ~opts) )
         fileset )))
