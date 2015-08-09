@@ -33,8 +33,8 @@ for the sake of expediency, here's an example of a `build.boot` file using this 
                                     :username (System/getenv "DATOMIC_REPO_USERNAME")
                                     :password (System/getenv "DATOMIC_REPO_PASSWORD") }]
                   ["companyname"   {:url      "s3p://companyname.repository/snapshot" ;; transactor jar
-                                    :username (System/getenv "COMPANYNAME_AWS_ACCESS_KEY")
-                                    :password (System/getenv "COMPANYNAME_AWS_SECRET_KEY") }]])
+                                    :username (System/getenv "COMPANY_AWS_ACCESS_KEY")
+                                    :password (System/getenv "COMPANY_AWS_SECRET_KEY") }]])
 
 (require
   '[tailrecursion.boot-datomic :refer [datomic backup restore]] )
@@ -58,12 +58,12 @@ for the sake of expediency, here's an example of a `build.boot` file using this 
   (.toString (.toURI (io/file (backup-uris environment)))) )
 
 (defn datomic-uri [environment]
-  (let [acc-key  (System/getenv "COMPANYNAME_AWS_ACCESS_KEY")
-        sec-key  (System/getenv "COMPANYNAME_AWS_SECRET_KEY")
+  (let [acc-key  (System/getenv "COMPANY_AWS_ACCESS_KEY")
+        sec-key  (System/getenv "COMPANY_AWS_SECRET_KEY")
         rmt-env? (or (= environment :production) (= environment :staging))
         base-uri (datomic-uris environment) ]
-    (assert acc-key "Missing environment variable COMPANYNAME_AWS_ACCESS_KEY.")
-    (assert sec-key "Missing environment variable COMPANYNAME_AWS_SECRET_KEY.")
+    (assert acc-key "Missing environment variable COMPANY_AWS_ACCESS_KEY.")
+    (assert sec-key "Missing environment variable COMPANY_AWS_SECRET_KEY.")
     (info "Connecting datomic to %s %s environment...\n" (if rmt-env? "remote" "local") (name environment))
     (str base-uri (if rmt-env? (str "?aws_access_key_id=" acc-key "&aws_secret_key=" sec-key))) ))
 

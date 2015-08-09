@@ -74,8 +74,9 @@
 
    (let [pod  (make-pod)]
       (core/with-pre-wrap fileset
-        (pod/with-call-in @pod
-          (tailrecursion.boot-datomic.backup/list-backups ~*opts*) )
+        (-> @pod
+          (pod/with-call-in (datomic.backup-cli/list-backups ~*opts*))
+          (println) )
         fileset )))
 
 (deftask restore
@@ -120,18 +121,22 @@
 
   For more information reference http://docs.datomic.com/capacity.html."
 
-  [k license-key KEY              str "License key (required)."
-   r protocol PROTOCOL            str "Storage protocol (dev)."
-   u host HOST                    str "Connection host (localhost)."
-   p port PORT                    str "Connection port (4334)."
-   l log-dir PATH                 str "The directory the logger will write to (/log)."
-   t memory-index-threshold BYTES str "Threshold at which to start indexing (32m)."
-   m memory-index-max BYTES       str "Maximum size of the memory index (256m)."
-   c object-cache-max BYTES       str "Size of the object cache (128m)." ]
-   (let [dir (core/cache-dir! ::data)
-         pod (make-pod)
-         opts (into transactor-defaults (assoc *opts* :data-dir (.getPath dir))) ]
+  [k license-key KEY              str  "License key (required)."
+   r protocol PROTOCOL            str  "Storage protocol (dev)."
+   u host HOST                    str  "Connection host (localhost)."
+   p port PORT                    str  "Connection port (4334)."
+   l log-dir PATH                 str  "The directory the logger will write to (/log)."
+   t memory-index-threshold BYTES str  "Threshold at which to start indexing (32m)."
+   m memory-index-max BYTES       str  "Maximum size of the memory index (256m)."
+   c object-cache-max BYTES       str  "Size of the object cache (128m)."
+   V volatile                     bool "Delete the data on each call (false)."]
+
+   (let [dir   (core/cache-dir! ::data)
+         pod   (make-pod)
+         opts* (assoc (dissoc *opts* :volatile) :data-dir (.getPath dir))
+         opts  (into transactor-defaults opts*) ]
       (core/with-pre-wrap fileset
+        (when volatile (core/empty-dir! dir))
         (pod/with-call-in @pod
-          (tailrecursion.boot-datomic.transactor/run ~opts) )
+          (datomic.transactor/run ~opts "datomic boot task options") )
         fileset )))
