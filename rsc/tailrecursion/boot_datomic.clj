@@ -7,12 +7,12 @@
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
   (delay (remove pod/dependency-loaded?
-   '[[com.datomic/datomic-transactor-pro "0.9.5186" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
-     [org.clojure/data.json              "0.2.3"] ])))
+   '[[com.datomic/datomic-transactor-pro "0.9.5153" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+     [org.clojure/data.json              "0.2.6"] ])))
 
 (defn make-pod []
   (-> (core/get-env)
-      (update-in [:dependencies] into (vec (seq @deps)))
+      (update :dependencies into (vec (seq @deps)))
       (pod/make-pod)
       (future) ))
 
@@ -46,7 +46,7 @@
   keys (SSE-S3).
 
   For more information reference http://docs.datomic.com/backup.html."
-
+  
   [s from-db-uri URI   str  "Required backup source"
    t to-backup-uri URI str  "Required backup target"
    e encryption        bool "Use AWS SSE-S3 encryption (false)"]

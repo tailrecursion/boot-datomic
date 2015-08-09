@@ -2,26 +2,27 @@
   :resource-paths #{"rsc"}
   :source-paths   #{"src"}
   :target-path    "tgt"
-  :dependencies   '[[org.clojure/clojure            "1.6.0"      :scope "provided"]
-                    [boot/core                      "2.0.0"      :scope "provided"]
-                    [ch.qos.logback/logback-classic "1.1.2"      :scope "provided"] ]
-  :repositories   #(into % [["datomic"   {:url      "https://my.datomic.com/repo"
-                                          :username (System/getenv "DATOMIC_REPO_USERNAME")
-                                          :password (System/getenv "DATOMIC_REPO_PASSWORD") }]]))
+  :dependencies   '[[org.clojure/clojure            "1.7.0"  :scope "provided"]
+                    [boot/core                      "2.1.2"  :scope "provided"]
+                    [ch.qos.logback/logback-classic "1.1.2"  :scope "provided"]
+                    [adzerk/bootlaces               "0.1.11" :scope "test"] ]
+  :repositories    [["clojars"       "https://clojars.org/repo/"]
+                    ["maven-central" "https://repo1.maven.org/maven2/"]
+                    ["datomic"       {:url      "https://my.datomic.com/repo"
+                                      :username (System/getenv "DATOMIC_REPO_USERNAME")
+                                      :password (System/getenv "DATOMIC_REPO_PASSWORD") }]])
 
 (require
+  '[adzerk.bootlaces           :refer :all]
   '[tailrecursion.boot-datomic :refer :all] )
 
 (def +version+ "0.1.0-SNAPSHOT")
 
+(bootlaces! +version+)
+
 (deftask run
   []
   (comp (wait) (speak) (datomic :license-key (System/getenv "DATOMIC_LICENSE_KEY")) ))
-
-(deftask build
-  "Build the jar distribution and install it to the local maven repo."
-  []
-  (comp (speak) (pom) (jar) (install)) )
 
 (task-options!
  pom  {:project     'tailrecursion/boot-datomic
