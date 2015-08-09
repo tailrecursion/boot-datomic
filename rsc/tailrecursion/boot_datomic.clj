@@ -46,7 +46,7 @@
   keys (SSE-S3).
 
   For more information reference http://docs.datomic.com/backup.html."
-  
+
   [s from-db-uri URI   str  "Required backup source"
    t to-backup-uri URI str  "Required backup target"
    e encryption        bool "Use AWS SSE-S3 encryption (false)"]
@@ -103,7 +103,7 @@
           (datomic.backup-cli/restore ~opts) )
         fileset )))
 
-(def ^:private default-transactor-opts
+(def ^:private transactor-defaults
  {:protocol               "dev"
   :host                   "localhost"
   :port                   "4334"
@@ -128,9 +128,9 @@
    t memory-index-threshold BYTES str "Threshold at which to start indexing (32m)."
    m memory-index-max BYTES       str "Maximum size of the memory index (256m)."
    c object-cache-max BYTES       str "Size of the object cache (128m)." ]
-
-   (let [pod (make-pod)
-         opts (into default-transactor-opts *opts*) ]
+   (let [dir (core/cache-dir! ::data)
+         pod (make-pod)
+         opts (into transactor-defaults (assoc *opts* :data-dir (.getPath dir))) ]
       (core/with-pre-wrap fileset
         (pod/with-call-in @pod
           (tailrecursion.boot-datomic.transactor/run ~opts) )
