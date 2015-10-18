@@ -8,7 +8,7 @@
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
   (delay (remove pod/dependency-loaded?
-   '[[com.datomic/datomic-transactor-pro "0.9.5153" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+   '[[com.datomic/datomic-transactor-pro "0.9.5327" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
      [org.clojure/data.json              "0.2.6"] ])))
 
 (defn make-pod []
