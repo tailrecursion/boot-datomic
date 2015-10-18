@@ -2,7 +2,8 @@
   {:boot/export-tasks true}
   (:require
     [boot.core :as core :refer [deftask]]
-    [boot.pod  :as pod] ))
+    [boot.pod  :as pod]
+    [boot.util :as util] ))
 
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
@@ -131,12 +132,20 @@
    c object-cache-max BYTES       str  "Size of the object cache (128m)."
    V volatile                     bool "Delete the data on each call (false)."]
 
-   (let [dir   (core/cache-dir! ::data)
-         pod   (make-pod)
-         opts* (assoc (dissoc *opts* :volatile) :data-dir (.getPath dir))
-         opts  (into transactor-defaults opts*) ]
+   (let [dir      (core/cache-dir! ::data)
+         pod      (make-pod)
+         opts*    (assoc (dissoc *opts* :volatile) :data-dir (.getPath dir))
+         opts     (into transactor-defaults opts*)
+         message #(util/info "%s the Datomic transactor on port %s...\n" % (:port opts))
+         empty   #(when volatile (core/empty-dir! %)) ]
+      (core/cleanup
+        (message  "\nStopping")
+        (pod/with-call-in @pod
+          (datomic.api/shutdown true) )
+        (empty dir) )
       (core/with-pre-wrap fileset
-        (when volatile (core/empty-dir! dir))
+        (message  "Starting")
+        (empty dir)
         (pod/with-call-in @pod
           (datomic.transactor/run ~opts "datomic boot task options") )
         fileset )))
