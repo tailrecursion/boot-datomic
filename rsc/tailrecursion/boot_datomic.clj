@@ -8,8 +8,11 @@
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
   (delay (remove pod/dependency-loaded?
-   '[[com.datomic/datomic-transactor-pro "0.9.5327" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
-     [org.clojure/data.json              "0.2.6"] ])))
+   '[[com.datomic/datomic-transactor-pro    "0.9.5344" :exclusions [ch.qos.logback/logback-classic org.slf4j/slf4j-nop]]
+     [com.amazonaws/aws-java-sdk-cloudwatch "1.10.50"]
+     [com.amazonaws/aws-java-sdk-dynamodb   "1.10.50"]
+     [com.amazonaws/aws-java-sdk-s3         "1.10.50"]
+     [org.clojure/data.json                 "0.2.6"] ])))
 
 (defn make-pod []
   (-> (core/get-env)

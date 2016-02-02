@@ -2,10 +2,10 @@
   :resource-paths #{"rsc"}
   :source-paths   #{"src"}
   :target-path    "tgt"
-  :dependencies   '[[org.clojure/clojure            "1.7.0"  :scope "provided"]
-                    [boot/core                      "2.1.2"  :scope "provided"]
-                    [ch.qos.logback/logback-classic "1.1.2"  :scope "provided"]
-                    [adzerk/bootlaces               "0.1.11" :scope "test"] ]
+  :dependencies   '[[org.clojure/clojure                 "1.7.0"  :scope "provided"]
+                    [boot/core                           "2.1.2"  :scope "provided"]
+                    [ch.qos.logback/logback-classic      "1.1.2"  :scope "provided"]
+                    [adzerk/bootlaces                    "0.1.11" :scope "test"] ]
   :repositories    [["clojars"       "https://clojars.org/repo/"]
                     ["maven-central" "https://repo1.maven.org/maven2/"]
                     ["datomic"       {:url      "https://my.datomic.com/repo"
