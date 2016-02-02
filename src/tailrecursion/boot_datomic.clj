@@ -151,4 +151,5 @@
         (empty dir)
         (pod/with-call-in @pod
           (datomic.transactor/run ~opts "datomic boot task options") )
+        (Thread/sleep 1000)
         fileset )))
