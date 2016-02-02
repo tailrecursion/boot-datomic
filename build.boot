@@ -1,6 +1,6 @@
 (set-env!
-  :resource-paths #{"rsc"}
-  :source-paths   #{"src"}
+  :source-paths   #{"cnf"}
+  :resource-paths #{"src"}
   :target-path    "tgt"
   :dependencies   '[[org.clojure/clojure                 "1.7.0"  :scope "provided"]
                     [boot/core                           "2.1.2"  :scope "provided"]
