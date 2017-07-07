@@ -1,24 +1,38 @@
 (ns tailrecursion.boot-datomic
   {:boot/export-tasks true}
   (:require
-    [boot.core :as core :refer [deftask]]
-    [boot.pod  :as pod]
-    [boot.util :as util] ))
+    [clojure.java.io :as io]
+    [boot.pod        :as pod]
+    [boot.util       :as util]
+    [boot.core       :as core :refer [deftask]]))
+
+(deftask install-jars
+  "Install the jars with maven pom files"
+  [f files PATH #{str} "Paths to jar files and directories."]
+  (let [{dirs true files false} (group-by #(.isDirectory %) (map io/file files))
+        files                   (concat (mapcat file-seq dirs) files)]
+    (core/with-pass-thru [fs]
+      (doseq [jarpath (filter #(re-find #".jar$" %) (map #(.getPath %) files))]
+        (util/info "Installing %s...\n" jarpath)
+        (try
+          (pod/with-call-worker
+            (boot.aether/install ~(core/get-env) ~jarpath nil))
+          (catch Exception e
+            (util/info "No pom file in jar %s. Installation skipped.\n" jarpath)))))))
 
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
-  (delay (remove pod/dependency-loaded?
-   '[[com.datomic/datomic-transactor-pro    "0.9.5350" :exclusions [org.slf4j/slf4j-nop]]
-     [com.amazonaws/aws-java-sdk-cloudwatch "1.10.50"]
-     [com.amazonaws/aws-java-sdk-dynamodb   "1.10.50"]
-     [com.amazonaws/aws-java-sdk-s3         "1.10.50"]
-     [org.clojure/data.json                 "0.2.6"] ])))
+  (->> '[[com.datomic/datomic-transactor-pro "0.9.5561.50" :exclusions [org.slf4j/slf4j-nop com.cognitect/caster]]
+         [com.cognitect/caster               "0.1.31"]]
+       (remove pod/dependency-loaded?)
+       (cons '[org.clojure/clojure "1.9.0-alpha15"])
+       (delay)))
 
 (defn make-pod []
   (-> (core/get-env)
       (update :dependencies into (vec (seq @deps)))
       (pod/make-pod)
-      (future) ))
+      (future)))
 
 (deftask create-dynamodb-table
   "Create a new DynamoDB table for use by Datomic.
@@ -34,8 +48,8 @@
          opts (into {:read-capacity 100 :write-capacity 50} *opts*)]
       (core/with-pre-wrap fileset
         (pod/with-call-in @pod
-          (datomic.provisioning.aws/create-system-command ~opts) )
-        fileset )))
+          (datomic.provisioning.aws/create-system-command ~opts))
+        fileset)))
 
 (deftask backup
   "Backup the database.
@@ -59,8 +73,8 @@
          opts (assoc *opts* :encryption (if encryption :sse))]
       (core/with-pre-wrap fileset
         (pod/with-call-in @pod
-          (datomic.backup-cli/backup ~opts) )
-        fileset )))
+          (datomic.backup-cli/backup ~opts))
+        fileset)))
 
 (deftask list-backups
   "List the approximate points in time (t) of available backups made of the
@@ -80,8 +94,8 @@
       (core/with-pre-wrap fileset
         (-> @pod
           (pod/with-call-in (datomic.backup-cli/list-backups ~*opts*))
-          (println) )
-        fileset )))
+          (println))
+        fileset)))
 
 (deftask restore
   "Restore the database.
@@ -105,8 +119,8 @@
          opts (clojure.set/rename-keys *opts* {:time :t})]
       (core/with-pre-wrap fileset
         (pod/with-call-in @pod
-          (datomic.backup-cli/restore ~opts) )
-        fileset )))
+          (datomic.backup-cli/restore ~opts))
+        fileset)))
 
 (def ^:private transactor-defaults
  {:protocol               "dev"
@@ -114,7 +128,7 @@
   :port                   "4334"
   :memory-index-max       "256m"
   :memory-index-threshold "32m"
-  :object-cache-max       "128m" })
+  :object-cache-max       "128m"})
 
 (deftask datomic
   "Start the transactor.
@@ -144,12 +158,14 @@
       (core/cleanup
         (message  "\nStopping")
         (pod/with-call-in @pod
-          (datomic.api/shutdown true) )
+          (datomic.api/shutdown true))
         (empty dir) )
       (core/with-pre-wrap fileset
         (message  "Starting")
         (empty dir)
         (pod/with-call-in @pod
-          (datomic.transactor/run ~opts "datomic boot task options") )
+          (datomic.transactor/run ~opts "datomic boot task options"))
         (Thread/sleep 1000)
-        fileset )))
+        fileset)))
+
+

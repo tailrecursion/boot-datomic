@@ -1,14 +1,14 @@
 # boot datomic (wip)
-run the datomic transactor in a pod. backup and restore the db using boot tasks.  
+run the datomic transactor in a pod. backup and restore the db using boot tasks.
 
 deployment tasks forthcoming. sometime. eventually.
 
 ## configuration
 
-install the transactor libary into your local maven repo.  ideally, someone at cognitect would notice this and decide it would be a great idea to distribute the transactor alongside the peer in the datomic repo. :)
+install the transactor libary and its dependent libraries into your local maven repo.  ideally, someone at cognitect would notice this and decide it would be a great idea to distribute the transactor alongside the peer in the datomic repo. :)
 
 ```bash
-mvn install:install-file -DgroupId=com.datomic -DartifactId=datomic-transactor-pro -Dfile=datomic-transactor-pro-0.9.5344.jar -DpomFile=pom.xml
+boot install-jars -f datomic-pro-0.9.5561.50/datomic-transactor-pro-0.9.5561.50.jar -f datomic-pro-0.9.5561.50/lib
 ```
 
 set the DATOMIC LICENSE KEY environment variable.
