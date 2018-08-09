@@ -8,7 +8,7 @@ deployment tasks forthcoming. sometime. eventually.
 install the transactor libary and its dependent libraries into your local maven repo.  ideally, someone at cognitect would notice this and decide it would be a great idea to distribute the transactor alongside the peer in the datomic repo. :)
 
 ```bash
-boot install-jars -f datomic-pro-0.9.5561.50/datomic-transactor-pro-0.9.5561.50.jar -f datomic-pro-0.9.5561.50/lib
+boot install-jars -f datomic-pro-0.9.5561.50/datomic-transactor-pro-0.9.5703.jar -f datomic-pro-0.9.5703/lib
 ```
 
 set the DATOMIC LICENSE KEY environment variable.
@@ -24,9 +24,9 @@ for the sake of expediency, here's an example of a `build.boot` file using this 
 (set-env!
   :resource-paths #{"src"}
   :source-paths   #{"ini" "rsc"}
-  :dependencies   '[[com.datomic/datomic-pro    "0.9.5344" :exclusions [org.slf4j/slf4j-nop org.slf4j/slf4j-log4j12]]
-                    [tailrecursion/boot-datomic "0.1.0-SNAPSHOT"]
-                    [ch.qos.logback/logback-classic  "1.0.1"] ]
+  :dependencies   '[[com.datomic/datomic-pro         "0.9.5703" :exclusions [org.slf4j/slf4j-nop org.slf4j/slf4j-log4j12]]
+                    [tailrecursion/boot-datomic      "0.1.2-SNAPSHOT"]
+                    [ch.qos.logback/logback-classic  "1.2.3"] ]
   :repositories  [["clojars"       "https://clojars.org/repo/"]
                   ["maven-central" "https://repo1.maven.org/maven2/"]
                   ["datomic"       {:url      "https://my.datomic.com/repo"

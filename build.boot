@@ -2,7 +2,7 @@
   :source-paths   #{"cnf"}
   :resource-paths #{"src"}
   :target-path    "tgt"
-  :dependencies   '[[org.clojure/clojure                 "1.8.0"  :scope "provided"]
+  :dependencies   '[[org.clojure/clojure                 "1.9.0"  :scope "provided"]
                     [ch.qos.logback/logback-classic      "1.2.3"  :scope "provided"]
                     [adzerk/bootlaces                    "0.1.13" :scope "test"]]
   :repositories    [["clojars"       "https://clojars.org/repo/"]
@@ -15,7 +15,7 @@
   '[adzerk.bootlaces           :refer :all]
   '[tailrecursion.boot-datomic :refer :all])
 
-(def +version+ "0.1.1-SNAPSHOT")
+(def +version+ "0.1.2-SNAPSHOT")
 
 (bootlaces! +version+)
 

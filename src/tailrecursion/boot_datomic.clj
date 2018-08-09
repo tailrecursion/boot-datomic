@@ -22,10 +22,10 @@
 
 (def ^:private deps
   "Datomic transactor to load if none is provided via the project."
-  (->> '[[com.datomic/datomic-transactor-pro "0.9.5561.50" :exclusions [org.slf4j/slf4j-nop com.cognitect/caster]]
-         [com.cognitect/caster               "0.1.31"]]
+  (->> '[[com.amazonaws/aws-java-sdk-dynamodb "1.11.382"]
+         [com.datomic/datomic-transactor-pro  "0.9.5703" :exclusions [org.slf4j/slf4j-nop jline-win/jline-win bsh/bsh]]]
        (remove pod/dependency-loaded?)
-       (cons '[org.clojure/clojure "1.9.0-alpha15"])
+       (cons '[org.clojure/clojure "1.9.0"])
        (delay)))
 
 (defn make-pod []
