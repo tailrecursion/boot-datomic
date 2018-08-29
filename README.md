@@ -3,6 +3,12 @@ run the datomic transactor in a pod. backup and restore the db using boot tasks.
 
 deployment tasks forthcoming. sometime. eventually.
 
+[](dependency)
+```clojure
+[tailrecursion/boot-datomic "0.1.3"] ;; latest release
+```
+[](/dependency)
+
 ## configuration
 
 install the transactor libary and its dependent libraries into your local maven repo.  ideally, someone at cognitect would notice this and decide it would be a great idea to distribute the transactor alongside the peer in the datomic repo. :)
